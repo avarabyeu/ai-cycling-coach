@@ -1,0 +1,2 @@
+fitparse>=1.2.0
+fit-tool>=0.9.15

@@ -1,0 +1,12 @@
+<workout_file>
+    <author>ai-cycling-coach</author>
+    <name>Recovery 45 min</name>
+    <description>Generated from build_workout_fit.py — targets are %FTP.</description>
+    <sportType>bike</sportType>
+    <tags/>
+    <workout>
+    <Warmup Duration="300" PowerLow="0.40" PowerHigh="0.55"/>
+    <SteadyState Duration="2100" Power="0.60"/>
+    <Cooldown Duration="300" PowerLow="0.40" PowerHigh="0.55"/>
+    </workout>
+</workout_file>

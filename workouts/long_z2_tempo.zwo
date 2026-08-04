@@ -1,0 +1,14 @@
+<workout_file>
+    <author>ai-cycling-coach</author>
+    <name>Long Z2 + Tempo</name>
+    <description>Generated from build_workout_fit.py — targets are %FTP.</description>
+    <sportType>bike</sportType>
+    <tags/>
+    <workout>
+    <Warmup Duration="300" PowerLow="0.50" PowerHigh="0.65"/>
+    <SteadyState Duration="4800" Power="0.70"/>
+    <IntervalsT Repeat="3" OnDuration="480" OffDuration="240" OnPower="0.82" OffPower="0.68"/>
+    <SteadyState Duration="1800" Power="0.70"/>
+    <Cooldown Duration="600" PowerLow="0.45" PowerHigh="0.60"/>
+    </workout>
+</workout_file>

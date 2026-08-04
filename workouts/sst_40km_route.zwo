@@ -1,0 +1,14 @@
+<workout_file>
+    <author>ai-cycling-coach</author>
+    <name>SST 3x10 · 40km route</name>
+    <description>Generated from build_workout_fit.py — targets are %FTP.</description>
+    <sportType>bike</sportType>
+    <tags/>
+    <workout>
+    <Warmup Duration="600" PowerLow="0.40" PowerHigh="0.65"/>
+    <Ramp Duration="480" PowerLow="0.65" PowerHigh="0.72"/>
+    <IntervalsT Repeat="3" OnDuration="600" OffDuration="300" OnPower="0.89" OffPower="0.55"/>
+    <SteadyState Duration="480" Power="0.65"/>
+    <Cooldown Duration="300" PowerLow="0.45" PowerHigh="0.55"/>
+    </workout>
+</workout_file>

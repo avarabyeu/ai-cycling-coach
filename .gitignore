@@ -1,0 +1,64 @@
+# -------- Personal training data (NEVER commit) --------
+# Your ingested activity database (contains all your rides' details).
+activities.db
+activities.db-journal
+activities.db-wal
+activities.db-shm
+
+# Raw activity files from your head unit (contain GPS traces, HR, power).
+WahooFitness/*.fit
+WahooFitness/*.FIT
+
+# Any other head-unit exports users may drop here.
+*.tcx
+*.gpx
+
+# -------- Secrets & credentials --------
+# intervals.icu API key.
+intervals_icu_api_key
+.intervals_api_key
+
+# TrainingPeaks, Strava, and other credentials.
+*_api_key
+*.pem
+*.key
+
+# Standard secret files.
+.env
+.env.local
+.env.*.local
+secrets.json
+
+# -------- Personal config --------
+# Your FTP/HRMAX (config.example.py is the template, config.py is yours).
+config.py
+
+# -------- Python --------
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.Python
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+env/
+
+# -------- OS / editor cruft --------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# -------- Session-local scratch --------
+scratchpad/
+tmp/
+*.tmp
