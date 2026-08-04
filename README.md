@@ -84,18 +84,88 @@ Then re-run: `python3 build_workout_fit.py`.
 
 ## Using with Claude Code
 
-The `.claude/skills/` directory contains modular skills that guide [Claude Code](https://claude.ai/claude-code) sessions:
+Once your data is synced and your config is in place, the whole project becomes a conversational coach. Open [Claude Code](https://claude.ai/claude-code) in this directory and talk to it in plain language — the `.claude/skills/` files tell Claude which script to run and how to interpret the output.
 
-| Skill | What it does |
-|---|---|
-| `sync-rides` | rclone from Dropbox + ingest new files into SQLite |
-| `analyze-ride` | Deep-dive analysis of a specific ride with coach's interpretation |
-| `training-status` | Big-picture weekly / YTD load summary with coaching read |
-| `estimate-ftp` | Multi-method FTP estimator with recommendation |
-| `build-workout` | Design and register a new workout in the library |
-| `push-workout` | Schedule a workout on the intervals.icu calendar |
+You don't call skills by name. Claude picks the right one from what you ask. Here's each skill, what triggers it, and what you'll get back.
 
-Ask Claude Code things like "analyze my latest ride", "how's my training block looking", "give me a sweet-spot workout for a 90-minute session" — the skills fire automatically based on the request.
+### `sync-rides` — refresh the training database
+
+**Triggers:** *"update my rides"*, *"pull latest activities"*, *"refresh training data"*
+
+Runs `rclone copy` from your Dropbox `Apps/WahooFitness` folder into `WahooFitness/`, then re-ingests any new files into `activities.db`. Fast (a few seconds for a few new rides). Reports how many new rides landed.
+
+Every other skill invokes this first automatically when it thinks the data might be stale, so you rarely need to trigger it explicitly.
+
+### `analyze-ride` — coach's read on a specific ride
+
+**Triggers:** *"analyze my latest ride"*, *"how did today's session go?"*, *"break down yesterday's ride"*
+
+Runs `analyze_ride.py` on the newest `.fit` (or a specific file if you name one), then interprets the numbers as a coach would. What you get:
+
+- **Ride type inferred from IF** — flags if the actual ride didn't match the intent (e.g. "billed as easy Z2, was tempo")
+- **Durability read** via Pw:HR decoupling — the most important signal for whether the ride broke you
+- **Peak-power windows** compared to your FTP — surfaces new benchmarks
+- **Quartile pacing** — where in the ride you cracked (if you did)
+- **Cadence and zone drift** on long rides
+
+**Example:** *"analyze my latest ride"* → 5-line headline with the coach's take, one metrics table if it helps, one recommendation.
+
+### `training-status` — big-picture form and load
+
+**Triggers:** *"how am I doing?"*, *"YTD totals"*, *"weekly load"*, *"am I fresh?"*
+
+Runs one or more of the canned queries in `analyze.py` and interprets the trends:
+
+- Weekly TSS trend over the last 4–6 weeks — flags when you're overreaching
+- Intensity mix — Z2 vs quality ratio, count of hard days in the last two weeks
+- Fitness trajectory — is NP rising at the same HR? (fitness) or falling? (fatigue or detrain)
+- Recovery signals from gaps between rides
+
+**Example:** *"how's my training block looking?"* → headline number + 1-2 tables + coaching read + one concrete recommendation.
+
+### `estimate-ftp` — is your FTP setting right?
+
+**Triggers:** *"estimate my FTP"*, *"do I need a re-test?"*, *"what's my FTP now?"*
+
+Runs a multi-method estimator across the last 60 days of rides: 20-min × 0.95 (Coggan), Critical Power model, sustained-NP median from your hardest 60–90 min efforts. Reports whether the methods converge (they usually do) and gives you one number with a confidence range.
+
+If your recent ceilings cluster tightly, it'll say a formal test isn't necessary. If they're noisy, it'll recommend a 20-min all-out test on fresh legs.
+
+**Example:** *"estimate my FTP"* → table of methods with values, plus "recommended: 245 W, range 240–255. Formal test not needed — three recent max efforts converge tightly."
+
+### `build-workout` — design a new interval session
+
+**Triggers:** *"design a sweet-spot workout"*, *"give me a 90-min VO2 session"*, *"create a threshold workout for a hilly route"*
+
+Talks through the workout with you if it's vague, then adds a new function to `build_workout_fit.py`, registers it, and regenerates all three output formats (`.fit`, `.zwo`, `.wdl.txt`) for it. The FIT builder round-trip-verifies against the spec — if the script prints "wrote", the file passed structural validation for Wahoo ELEMNT BOLT V1 + intervals.icu.
+
+**Example:** *"give me a sweet-spot workout with a 3×12 main set, ~75 min total"* → step list, estimated TSS, files emitted, registry key you can then schedule.
+
+Chains into `push-workout` if you also want it on the calendar.
+
+### `push-workout` — schedule to intervals.icu → Wahoo
+
+**Triggers:** *"schedule the SST workout for Wednesday"*, *"push tomorrow's training"*, *"plan my week"*
+
+POSTs a workout from the registry as intervals.icu WDL text via their API. intervals.icu generates the FIT server-side and pushes it to your Wahoo ELEMNT (native Wahoo Cloud integration since May 2024). This bypasses the fragile `.fit`/`.zwo` drag-and-drop path.
+
+If you ask for a full week, it picks a balanced set (Z2 base + threshold + long ride, rest days left blank) and pushes them in parallel. You get back a schedule table with intervals.icu event IDs, direct workout URLs, and estimated weekly TSS.
+
+**Example:** *"plan my next week — I want two quality days and a long Saturday"* → 3–4 workouts scheduled with dates and times, plus a note about verifying the intervals.icu → Wahoo sync toggle.
+
+### How skills chain
+
+- `analyze-ride`, `training-status`, `estimate-ftp` — all silently invoke `sync-rides` first
+- `build-workout` → `push-workout` — designing a new session then scheduling it
+- `training-status` → `push-workout` — pick this week's workouts based on your recent load
+
+### Getting the most out of it
+
+- **Be direct.** "Analyze my last three rides and tell me if I need a rest week" works better than "how am I doing?"
+- **Push back on what Claude says.** If a workout suggestion looks wrong for your fitness, say so — the skills are opinionated, not authoritative.
+- **Update your FTP when it drifts.** Edit `config.py`, then also update the FTP setting on your head unit — the workout files use `%FTP`, so they auto-scale.
+
+If you don't want to use Claude, all the underlying scripts (`analyze.py`, `analyze_ride.py`, `push_workout.py --list`) work standalone from the command line.
 
 ## Data model
 
