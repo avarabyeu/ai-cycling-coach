@@ -56,11 +56,78 @@ Watch for occasional zero-power quartiles or unusually low avg_power alongside h
 
 Structure:
 1. **Headline number** — the one metric that captures the block (biggest week? YTD milestone? fatigue signal?).
-2. **1–2 tables** at most — pick views that answer the actual question.
+2. **ASCII visualization first**, then the underlying table if useful. See `## Visualizations`.
 3. **Coaching read** — 3–5 sentences on what the data says.
 4. **What to do next** — one concrete recommendation (rest week, FTP re-test, more Z2, etc.).
 
 Keep it tight. A coach's brief, not an analytics dashboard.
+
+## Visualizations
+
+Every status read must include at least one chart. ASCII only — render in fenced code blocks so alignment survives.
+
+### Weekly TSS bar (default for load questions)
+
+12 weeks, one bar per week, height = TSS. Mark the current week, tag down-weeks and overload weeks.
+
+```
+Week      TSS   0    200   400   600   800
+W-11 Jun09 320  ████████
+W-10 Jun16 480  ████████████
+W-09 Jun23 210  █████▏         ← down-week
+W-08 Jun30 510  █████████████
+W-07 Jul07 560  ██████████████
+W-06 Jul14 640  ████████████████  ← overload flag
+W-05 Jul21 620  ███████████████▍
+W-04 Jul28 280  ███████        ← down-week
+W-03 Aug04 490  ████████████▍
+W-02 Aug11 530  █████████████▍
+W-01 Aug18 590  ██████████████▊
+W-00 Aug25 410  ██████████▎   ← current (partial)
+```
+
+### YTD / YoY comparison (for "how am I doing this year")
+
+Two side-by-side bars per month. Always show whether current year is ahead / behind.
+
+```
+        2025          2026
+Jan   █████ 180    ██████▏ 220     +22 %
+Feb   ██████ 210   ███████ 260     +24 %
+Mar   ████████ 310 █████████ 340   + 9 %
+Apr   ██████████ 400  ████████ 320  −20 %  ← under-loaded
+...
+```
+
+### Intensity mix pie-ish bar
+
+One horizontal bar segmented by Z2 / tempo / threshold / VO2 time, over the last 4 weeks.
+
+```
+Last 28 days, ~14h30 riding
+[========Z2 68%========][==tempo 14%==][thr 11%][VO2 7%]
+Verdict: Z2:quality ≈ 4:1 — healthy base block.
+```
+
+### Fitness trajectory sparkline (for "am I improving")
+
+For a chosen benchmark (e.g. best 20 min NP by week), one line per week.
+
+```
+Best 20-min NP by week (12w):
+190 ─────────────█
+     ────────█───█─
+     ───█████────
+170 ██
+     week -11 ─────────────────── week 0
+```
+
+## Rules for the ASCII
+
+- Fence with triple backticks so alignment holds.
+- Widest bar ≤ 40 chars. Include the numeric value at the end of each bar.
+- Down-weeks and overload weeks get an inline tag, not a legend.
+- Never fabricate weeks the rider didn't ride — leave the bar empty and label it `off`.
 
 ## Notes
 

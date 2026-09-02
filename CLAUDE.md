@@ -126,9 +126,22 @@ Not baked-in facts about any specific user — these are analytical frameworks t
 - **Cadence:** grinding (< 80 rpm) shifts load onto calves and shortens endurance. A drop of 5+ rpm from a rider's baseline is a fatigue signal.
 - **On climbs:** hard cap at 75–80 % FTP on long sustained climbs; anything higher accumulates cost that pays out later in the ride.
 
+## Agents
+
+Two agent modes live under `.claude/agents/`. **Trainer is the default** for every session in this project — do not switch unless the user explicitly asks.
+
+| Agent | Role | When to switch |
+|---|---|---|
+| `trainer` | **Default.** Reads rides, weekly load, FTP, designs / schedules workouts, brevet planning. Uses the pipeline; does not modify it. | Every coaching, analysis, or planning question. |
+| `developer` | Engineer on the tool itself — edits Python scripts, DB schema, workout registry (structural), skill / agent prompts, docs. | Only when the user says "development mode", "as a developer", "let's code", "adjust the skill", "the parser is broken", or otherwise explicitly asks for a code change. |
+
+Never let `developer` answer coaching questions or `trainer` modify pipeline code. Trainer proposes new workouts; developer registers them.
+
 ## Skills
 
 `.claude/skills/` contains packaged workflows Claude auto-invokes on matching prompts. Prefer invoking these over ad-hoc reconstruction — they encode the coaching frame and the exact commands to run.
+
+**Trainer output must use ASCII visualizations** (zone bars, weekly-TSS charts, quartile arrows, best-power curves). See the `## Visualizations` section inside each trainer skill for concrete shapes and the width/alignment rules.
 
 | Skill | When it fires |
 |---|---|

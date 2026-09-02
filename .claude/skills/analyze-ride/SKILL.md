@@ -71,7 +71,89 @@ Before interpreting: verify no obvious sensor issues. If avg_power is unusually 
 Deliver a concise coaching brief, not a data dump:
 - **Headline** — one line: what kind of ride it was + the standout finding
 - **Key metrics** — a table only if it clarifies the story
+- **ASCII visualizations** — mandatory. See `## Visualizations` below.
 - **Durability read** — always
 - **What to notice / do next** — one or two actionable takeaways
 
 Keep the tone direct. Interpret, don't just repeat.
+
+## Visualizations
+
+Every ride analysis must include at least the first three of these. Add the others when they clarify a specific finding. ASCII only — render in fenced code blocks so alignment survives.
+
+### 1. Power-zone distribution (always)
+
+Horizontal bars, one row per Coggan zone, width scaled to time-in-zone. Include % and mm:ss. Mark the target zone(s) for the ride's stated intent with `◀ target`.
+
+```
+Z1  Recovery      ██                            8%   07:12
+Z2  Endurance     ████████████                 30%   26:15  ◀ target
+Z3  Tempo         ████████                     14%   12:11
+Z4  Threshold     █████████████                18%   15:52
+Z5  VO2max        ██████████                   13%   11:28
+Z6  Anaerobic     ██████                        6%   05:15
+Z7  Neuromuscular ██████████                   11%   09:47
+```
+
+### 2. Heart-rate zone distribution (always)
+
+Same treatment as power, based on HR zones from `HRMAX` in `config.py`. Compare against the power distribution — HR skewed higher than power = fatigue or heat; HR skewed lower = fresh / cool day.
+
+### 3. Quartile pacing (always for rides ≥ 45 min)
+
+Q1..Q4 as a compact table AND a mini power-and-HR sparkline. Draw the P/HR ratio trend with arrows (`↗ ↘ →`) so drift direction is instantly visible.
+
+```
+        Q1     Q2     Q3     Q4
+Power   215    207    215    213   W
+HR      158    158    158    162   bpm
+P/HR   1.36   1.31   1.36   1.32   →  ↘  ↗  ↘   (fade: none)
+```
+
+Follow with a one-line durability verdict (`good / normal drift / meaningful fade / severe fade`).
+
+### 4. Best-power curve (when peaks are notable)
+
+Compact log-ish x-axis for 5s, 30s, 1m, 5m, 10m, 20m, 60m. Watts + %FTP + bar.
+
+```
+5s    780W  390%FTP  ████████████████████████
+30s   520W  260%FTP  ████████████████
+1m    380W  190%FTP  ████████████
+5m    238W  119%FTP  ███████    ← VO2 window
+20m   190W   95%FTP  █████      ← near-threshold
+60m   172W   86%FTP  ████
+```
+
+Annotate any window that crosses a meaningful threshold (VO2, threshold, ceiling).
+
+### 5. Lap / interval sketch (interval sessions)
+
+One row per lap. Show target vs actual, and NP where it diverges from avg.
+
+```
+     avg    NP    HR   %FTP  target
+I1   215   217   158    108%   100%   ██████████▏
+I2   207   210   158    104%   100%   ██████████
+I3   215   228   158    108%   100%   ██████████▏  (NP > avg: wind/hills)
+I4   213   219   159    107%   100%   ██████████▏
+I5   238   241   162    119%   100%   ████████████ ← ceiling
+```
+
+### 6. Elevation + power on long rides (optional, when climbs shape the story)
+
+10 km buckets. Small profile bar + a mini power dot per bucket. Flag over-cap segments.
+
+```
+ 0–10   ▁▁▁     +12m   avg 145W
+10–20   ▂▃▄     +45m   avg 162W
+20–30   ▆▇█     +88m   avg 231W  ← over-cap (target 180)
+30–40   █▇▆     -50m   avg 174W
+```
+
+## Rules for the ASCII
+
+- Wrap in triple-backtick fences so monospace alignment survives Markdown rendering.
+- Bar unit `█` = ~2 %. Keep the widest row ≤ 40 chars so it fits a narrow terminal.
+- Never invent numbers to fill a chart. If a section (e.g. laps) is not present in the ride, skip that visualization — do not fabricate one.
+- Numbers align in columns. Percent + duration always appear next to the bar.
